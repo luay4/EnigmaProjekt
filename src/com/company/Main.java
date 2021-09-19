@@ -21,32 +21,38 @@ public class Main {
             caesarCipherMenu();
         }
         if (choice == 3) {
-            System.out.println("Du har valgt Vigenére cipher");
-            System.out.println("Tast e for encrypt eller d for decrypt:  ");
-            String numberChoice = in.nextLine();
-            if (numberChoice.equals("e")) {
-                System.out.print("Indtast tekst: ");
-                String vigenereEncrypt = in.nextLine();
-                System.out.print("Indtast nøgleord: ");
-                String keywordEncrypt = in.nextLine();
-                System.out.print("Kodteksten er: ");
-                //vigenereCipherEncryt();
-
-            }
-            if (numberChoice.equals("d")) {
-                System.out.print("Indtast kodetekst");
-                String vigenereDecrypt = in.nextLine();
-                System.out.print("Indtast nøgleord: ");
-                String keywordEncrypt = in.nextLine();
-                System.out.print("Originalteksten er: ");
-                vigenereCipherDecrypt();
-            }
+            vigenereCipherMenu();
         }
         if (choice == 0) {
             System.out.println("Du har valgt exit. Tak for denne gang!");
 
         }
 
+    }
+
+    public static void vigenereCipherMenu() {
+        Scanner in = new Scanner(System.in);
+
+        System.out.println("Du har valgt Vigenére cipher");
+        System.out.println("Tast e for encrypt eller d for decrypt:  ");
+        String numberChoice = in.nextLine();
+        if (numberChoice.equals("e")) {
+            System.out.print("Indtast tekst: ");
+            String vigenereEncrypt = in.nextLine();
+            System.out.print("Indtast nøgleord: ");
+            String keywordEncrypt = in.nextLine();
+            System.out.print("Kodteksten er: ");
+            System.out.println(arrayToString(vigenereCipherEncrypt(vigenereEncrypt, keywordEncrypt)));
+
+        }
+        if (numberChoice.equals("d")) {
+            System.out.print("Indtast kodetekst: ");
+            String vigenereDecrypt = in.nextLine();
+            System.out.print("Indtast nøgleord: ");
+            String keywordEncrypt = in.nextLine();
+            System.out.print("Originalteksten er: ");
+            System.out.println(arrayToString(vigenereCipherDecrypt(vigenereDecrypt, keywordEncrypt)));
+        }
     }
 
     public static void numberCipherMenu() {
@@ -75,7 +81,7 @@ public class Main {
         System.out.println("Du har valgt Caesar cipher");
         System.out.print("Indtast tekst/kodetekst: ");
         String caesarDecrypt = in.nextLine();
-        System.out.print("Vælg shift (1-29): ");
+        System.out.print("Vælg shift (1-29) (minus hvis det skal decodes): ");
         int decryptShift = in.nextInt();
         System.out.print("Originalteksten er: ");
         System.out.println(arrayToString(caeserCipherEncrypAndDecrypt(caesarDecrypt, decryptShift)));
@@ -119,7 +125,7 @@ public class Main {
         return numberList;
     }
 
-    public static String[] caesarIntArrayToString(int[] numberList, int shift) {
+    public static String[] caesarIntArrayToStringArray(int[] numberList, int shift) {
         int[] integerList = shiftListOfNumbers(numberList, shift - shift);
         String[] alphabet = {" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
                 "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Æ", "Ø", "Å", "A", "B", "C", "D",
@@ -136,7 +142,7 @@ public class Main {
     public static String[] caeserCipherEncrypAndDecrypt(String text, int shift) {
         int[] numberList = textToIntArray(text);
         int[] shiftedNumberList = shiftListOfNumbers(numberList, shift);
-        String[] finalText =  caesarIntArrayToString(shiftedNumberList, shift);
+        String[] finalText =  caesarIntArrayToStringArray(shiftedNumberList, shift);
         return finalText;
     }
 
@@ -163,7 +169,7 @@ public class Main {
         return intArray;
     }
 
-    public static String[] intArrayToString(String numbers) {
+    public static String[] intArrayToStringArray(String numbers) {
         int[] integerList = stringArrayToIntArray(numbers);
         String[] alphabet = {" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
                 "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Æ", "Ø", "Å"};
@@ -182,24 +188,63 @@ public class Main {
     }
 
     public static String[] numberCipherDecrypt(String text) {
-        String[] finalText = intArrayToString(text);
+        String[] finalText = intArrayToStringArray(text);
         return finalText;
     }
 
 
-   /* public static void vigenereCipherEncryt (String text, String keyword) {
+    public static String[] vigenereCipherEncrypt(String text, String keyword) {
         int[] textArray = textToIntArray(text);
         int[] keywordArray = textToIntArray(keyword);
+        int[] newNumberlist = keywordShiftList(textArray, keywordArray);
+        String[] stringArray = vigenereIntArrayToStringArray(newNumberlist);
+        return stringArray;
+    }
+
+    public static String[] vigenereCipherDecrypt(String text, String keyword)  {
+        int[] textArray = textToIntArray(text);
+        int[] keywordArray = textToIntArray(keyword);
+        int[] newNumberlist = keywordShiftBackList(textArray, keywordArray);
+        String[] stringArray = vigenereIntArrayToStringArray(newNumberlist);
+        return stringArray;
+    }
+
+    public static int[] keywordShiftList(int[] numberList, int[] keywordList) {
+        int[] newNumberList = new int[numberList.length];
         int n = 0;
-        for (int i = 0; i < textArray.length; i++) {
-
-            while (n < keywordArray.length);
-            textArray[i] = shiftListOfNumbers(textArray, keywordArray[n]);
+        for (int i = 0; i < numberList.length; i++) {
+            newNumberList[i] = shiftNumber(numberList[i], keywordList[n]);
             n++;
+            if (n == keywordList.length) {
+                n = 0;
+            }
         }
-    }*/
+        return newNumberList;
+    }
 
-    public static void vigenereCipherDecrypt () {
+    public static int[] keywordShiftBackList(int[] numberList, int[] keywordList) {
+        int[] newNumberList = new int[numberList.length];
+        int n = 0;
+        for (int i = 0; i < numberList.length; i++) {
+            newNumberList[i] = shiftNumber(numberList[i], keywordList[n] * -1);
+            n++;
+            if (n == keywordList.length) {
+                n = 0;
+            }
+        }
+        return newNumberList;
+    }
 
+    public static String[] vigenereIntArrayToStringArray(int[] numberList) {
+        String[] alphabet = {" ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+                "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Æ", "Ø", "Å", "A", "B", "C", "D",
+                "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+                "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Æ", "Ø", "Å"};
+        String[] finalText = new String[numberList.length];
+
+        for (int i = 0; i < numberList.length; i++) {
+            finalText[i] = alphabet[numberList[i]];
+        }
+        return finalText;
     }
 }
